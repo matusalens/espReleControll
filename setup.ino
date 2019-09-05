@@ -3,6 +3,9 @@ void setup(void) {
   Serial.begin(115200);
   Serial.print("\n");
 
+  pinMode(RELE_1, OUTPUT);
+  pinMode(RELE_2, OUTPUT);
+  pinMode(RELE_3, OUTPUT);
 
 
   EEPROM.begin(512);
@@ -25,7 +28,7 @@ void setup(void) {
   if(wifiConfig.config_inicial!=1){
     Serial.print("Configuracoes iniciais criadas");
     String ssid_ap ="ETempCtrl_" + String(ESP.getChipId()%1000);;
-    String pwd_ap = "home2016";
+    String pwd_ap = "Esptempctl";
     String ssid_wifi = "";
     String pwd_wifi = "";
     wifiConfig.config_inicial = 1;
@@ -49,19 +52,7 @@ void setup(void) {
   Serial.print("Status do WIFI_ERROR");
   Serial.println(wifi_error);
   if (wifi_error == 0) {
-    WiFi.begin(wifiConfig.ssid_wifi, wifiConfig.pwd_wifi);
-
-    for (int i = 0; i < 20; i++) {
-      delay(1000);
-      Serial.println(WiFi.status());
-      if (WiFi.status() == 3) {
-        Serial.println("");
-        Serial.println("WiFi connected");
-        Serial.println("IP address: ");
-        Serial.println(WiFi.localIP());
-        break;
-      }
-    }
+    wifiConnect();
   }
 
   Serial.print("Configuring access point...");
@@ -77,10 +68,8 @@ void setup(void) {
     if (!handleFileRead("/index.html")) server.send(404, "text/plain", "FileNotFound");
   });
 
-   server.on("/getstatusreles", HTTP_GET, []() {
+  server.on("/getstatusreles", HTTP_GET, []() {
     String rele1, rele2, rele3;
-    String rele4,rele5,rele6;
-    String rele7,rele8;
     if (!Rele_1_flag) {
       rele1 = "0";
     } else {
@@ -96,34 +85,6 @@ void setup(void) {
     } else {
       rele3 = "1";
     };
-        if (!Rele_4_flag) {
-      rele4 = "0";
-    } else {
-      rele4 = "1";
-    };
-
-       if (!Rele_5_flag) {
-      rele5 = "0";
-    } else {
-      rele5 = "1";
-    };
-
-     if (!Rele_6_flag) {
-      rele6 = "0";
-    } else {
-      rele6 = "1";
-    };
-
-     if (!Rele_7_flag) {
-      rele7 = "0";
-    } else {
-      rele7 = "1";
-    };
-     if (!Rele_8_flag) {
-      rele8 = "0";
-    } else {
-      rele8 = "1";
-    };
 
     // Formata a dados canais em json
    
@@ -132,18 +93,32 @@ void setup(void) {
     json += "\"rele1\":\"" + String(rele1) + "\",";
     json += "\"rele2\":\"" + String(rele2) + "\",";
     json += "\"rele3\":\"" + String(rele3) + "\",";
-    json += "\"rele4\":\"" + String(rele4) + "\",";    
-    json += "\"rele5\":\"" + String(rele5) + "\",";    
-    json += "\"rele6\":\"" + String(rele6) + "\",";    
-    json += "\"rele7\":\"" + String(rele7) + "\",";    
-    json += "\"rele8\":\"" + String(rele8) + "\",";            
+    json += "\"rele4\":\"" + String(Rele_4_flag) + "\",";    
+    json += "\"rele5\":\"" + String(Rele_5_flag) + "\",";    
+    json += "\"rele6\":\"" + String(Rele_6_flag) + "\",";    
+    json += "\"rele7\":\"" + String(Rele_7_flag) + "\",";    
+    json += "\"rele8\":\"" + String(Rele_8_flag) + "\"";            
     json += "}";
 
     server.send(200, "text/json", json);
     json = String();
 
   });
+  server.on("/getconninfo", HTTP_GET, []() {
+    
+    // Formata a dados canais em json
+   
+    String json = "{";
 
+    json += "\"connected\":\"" + String(wifi_connected) + "\",";
+    json += "\"ip\":\"" + String(connected_ip) + "\"";           
+    json += "}";
+
+    server.send(200, "text/json", json);
+    json = String();
+
+  });
+  
   server.on("/getserverstatus", HTTP_GET, []() {
  // Formata a dados em json
     String json = "{";
@@ -168,101 +143,41 @@ void setup(void) {
       case 1:
       if(!valor){
         Rele_1_flag = false;
-        mcu.println('a');
-        Serial.println('a');
+        digitalWrite(RELE_1,LOW);
       } else{                
         Rele_1_flag = true;
-       mcu.println('A');
-       Serial.println('A');
+        digitalWrite(RELE_1,HIGH);
       }
         break;
       case 2:
       if(!valor){//desligar rele1
         Rele_2_flag = false;
-        mcu.println('b');
-        Serial.println('b');
+        digitalWrite(RELE_2,LOW);
       }else{
         Rele_2_flag = true;
-        mcu.println('B');
-        Serial.println('B');
+        digitalWrite(RELE_2,HIGH);
       }
         break;
             case 3:
       if(!valor){
         Rele_3_flag = false;
-       mcu.println('c');
-       Serial.println('c');
+        digitalWrite(RELE_3,LOW);
       }
       else{//ligar rele1
         Rele_3_flag = true;
-       mcu.println('C');
-       Serial.println('C');
+        digitalWrite(RELE_3,HIGH);
       }
         break;
             case 4:
       if(!valor){
         Rele_4_flag = false;
-       mcu.println('d');
-       Serial.println('d');
+        digitalWrite(RELE_4,LOW);
       }
       else{//ligar rele1
         Rele_4_flag = true;
-       mcu.println('D');
-       Serial.println('D');
+        digitalWrite(RELE_4,HIGH);
       }
-        break;
-
-case 5:
- if(!valor){
-        Rele_5_flag = false;
-       mcu.println('e');
-       Serial.println('e');
-      } else{                
-        Rele_5_flag = true;
-        mcu.println('E');
-        Serial.println('E');
-      }
-        break;
-      case 6:
-      if(!valor){//desligar rele1
-        Rele_6_flag = false;
-        mcu.println('f');
-        Serial.println('f');
-      }else{
-        Rele_6_flag = true;
-       mcu.println('F');
-       Serial.println('F');
-      }
-        break;
-       case 7:
-      if(!valor){
-        Rele_7_flag = false;
-        mcu.println('h');
-        Serial.println('h');
-      }
-      else{//ligar rele1
-        Rele_7_flag = true;
-        mcu.println('H');
-        Serial.println('H');
-      }
-        break;
-            case 8:
-      if(!valor){
-        Rele_8_flag = false;
-      mcu.println('g');
-      Serial.println('g');
-      }
-      else{//ligar rele1
-        Rele_8_flag = true;
-        mcu.println('G');
-        Serial.println('G');
-      }
-        break;
-
-
-
-
-                    
+        break;            
     }
     
     String json = "{";
@@ -310,7 +225,12 @@ case 5:
     EEPROM.put(WIFI_CONFIG, wifiConfig);
     EEPROM.put(WIFI_ERROR, wifi_error);
     EEPROM.commit();        
- 
+
+    if(wifi_connected){
+      WiFi.disconnect();
+    }
+    wifiConnect();
+    
     String json = "{";
     json += "\"salvo\":true";
     json += "}";

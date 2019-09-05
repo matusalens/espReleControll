@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1">
-		<title>Controle de Rele</title>
+		<title>Typhon Wifi Controller</title>
 
 		<!-- Include jQuery Mobile and jQuery-Clock-Plugin stylesheets -->
 		<link rel="stylesheet" href="all_css.min.css">
@@ -89,7 +89,7 @@
 
 			<!-- header -->
 			<div data-role="header">
-			  <h1>Controle de Reles</h1>
+			  <h1>Typhon Temperature Controller</h1>
 			</div>
 
 			<!-- content -->
@@ -97,25 +97,26 @@
 
 				<div class="ui-corner-all custom-corners">
 					<div class="ui-bar ui-bar-a">
-						<h3>Status Atual</h3>
+						<h3>Status Atual:  </h3><span id="status_conn"></span><p>
+						<p><strong>IP Connectado: </strong><span id="ip_conn"></span> </p>
 					</div>
 					<div class="ui-body ui-body-a">
-						<p><div class="ui-block-b"><strong>  R1: </strong><select data-role="slider" name="switch_rele1" id="switch_rele1">
-						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p><br/>
-						<p><div class="ui-block-b"><strong>  R2: </strong><select data-role="slider" name="switch_rele2" id="switch_rele2">
-						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p><br/>
-						<p><div class="ui-block-b"><strong>  R3: </strong><select data-role="slider" name="switch_rele3" id="switch_rele3">
-						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p><br/>
-						<p><div class="ui-block-b"><strong>  R4: </strong><select data-role="slider" name="switch_rele4" id="switch_rele4">
-						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p><br/>
-						<p><div class="ui-block-b"><strong>  R5: </strong><select data-role="slider" name="switch_rele5" id="switch_rele5">
-						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p><br/>
-						<p><div class="ui-block-b"><strong>  R6: </strong><select data-role="slider" name="switch_rele6" id="switch_rele6">
-						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p><br/>
-						<p><div class="ui-block-b"><strong>  R7: </strong><select data-role="slider" name="switch_rele7" id="switch_rele7">
-						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p><br/>
-						<p><div class="ui-block-b"><strong>  R8: </strong><select data-role="slider" name="switch_rele8" id="switch_rele8">
-						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p><br/>
+						<p><div class="ui-block-b"><strong>Rele 1 Status: </strong><select data-role="slider" name="switch_rele1" id="switch_rele1">
+						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p>
+						<p><div class="ui-block-b"><strong>Rele 2 Status: </strong><select data-role="slider" name="switch_rele2" id="switch_rele2">
+						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p>
+						<p><div class="ui-block-b"><strong>Rele 3 Status: </strong><select data-role="slider" name="switch_rele3" id="switch_rele3">
+						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p>
+						<p><div class="ui-block-b"><strong>Rele 4 Status: </strong><select data-role="slider" name="switch_rele4" id="switch_rele4">
+						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p>
+						<p><div class="ui-block-b"><strong>Rele 5 Status: </strong><select data-role="slider" name="switch_rele5" id="switch_rele5">
+						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p>
+						<p><div class="ui-block-b"><strong>Rele 6 Status: </strong><select data-role="slider" name="switch_rele6" id="switch_rele6">
+						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p>
+						<p><div class="ui-block-b"><strong>Rele 7 Status: </strong><select data-role="slider" name="switch_rele7" id="switch_rele7">
+						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p>
+						<p><div class="ui-block-b"><strong>Rele 8 Status: </strong><select data-role="slider" name="switch_rele8" id="switch_rele8">
+						<option value="0">OFF</option>	<option value="1">ON</option>	</select>	</div></p>
 	
 					</div>
 				</div>
@@ -181,21 +182,35 @@
 			$(document).ready(function() {
 
 
-				
-				(function pollServerForStatus() {
+				$("#pinicio").on("pagecreate", function( event ) {
 					$.getJSON("/getstatusreles", function( data ) {
-						$("#switch_rele1").val(data.rele1).change();
-						$("#switch_rele2").val(data.rele2).change();
-						$("#switch_rele3").val(data.rele3).change();
-						$("#switch_rele4").val(data.rele4).change();
-						$("#switch_rele5").val(data.rele5).change();
-						$("#switch_rele6").val(data.rele6).change();
-						$("#switch_rele7").val(data.rele7).change();
-						$("#switch_rele8").val(data.rele8).change();
+						$("#switch_rele1").val(data.rele1);
+						$("#switch_rele2").val(data.rele2);
+						$("#switch_rele3").val(data.rele3);
+						$("#switch_rele4").val(data.rele4);
+						$("#switch_rele5").val(data.rele5);
+						$("#switch_rele6").val(data.rele6);
+						$("#switch_rele7").val(data.rele7);
+						$("#switch_rele8").val(data.rele8);						
+					});
+				//});	
+					
+				}());
+					(function pollServerForConnStatus() {
+					$.getJSON("/getconninfo", function( data ) {
+					
+						if(data.connected == "0"){
+						$("#status_conn").text(" Não Conectado");
+						$("#ip_conn").text("");}else{
+						$("#status_conn").text(" Conectado");
+						$("#ip_conn").text(data.ip);}
 						
-						setTimeout(pollServerForStatus, 15000);
+						
+						setTimeout(pollServerForConnStatus, 30000);
 					});
 				}());
+				
+				 
 
 				(function pollServerStatus() {
 					$.ajax({
@@ -217,88 +232,63 @@
 				}());
 
 			//switch_rele1
-				$("#switch_rele1").change(function() {
-					
-					// Envia dados para o servidor
-					//$.getJSON( "/iluminaaquario/jquery_mobile/setalloff.php", function(result) {
+				$("#switch_rele1").change(function() {				
 					$.getJSON( "/setrele", { rele: "1", valor: $("#switch_rele1").val()}, function(result) {
-						//
-						//alert(result.salvo);
 					});
 				});
 				$("#switch_rele2").change(function() {
-					
-					// Envia dados para o servidor
-					//$.getJSON( "/iluminaaquario/jquery_mobile/setalloff.php", function(result) {
+
 					$.getJSON( "/setrele", { rele: "2", valor: $("#switch_rele2").val()}, function(result) {
-						//
-						//alert(result.salvo);
+
 					});
 				});
 				$("#switch_rele3").change(function() {
-					
-					// Envia dados para o servidor
-					//$.getJSON( "/iluminaaquario/jquery_mobile/setalloff.php", function(result) {
+
 					$.getJSON( "/setrele", { rele: "3", valor: $("#switch_rele3").val()}, function(result) {
-						//
-						//alert(result.salvo);
+
 					});
 				});
 				$("#switch_rele4").change(function() {
-					
-					// Envia dados para o servidor
-					//$.getJSON( "/iluminaaquario/jquery_mobile/setalloff.php", function(result) {
+
 					$.getJSON( "/setrele", { rele: "4", valor: $("#switch_rele4").val()}, function(result) {
-						//
-						//alert(result.salvo);
+
 					});
 				});
 				$("#switch_rele5").change(function() {
-					
-					// Envia dados para o servidor
-					//$.getJSON( "/iluminaaquario/jquery_mobile/setalloff.php", function(result) {
+
 					$.getJSON( "/setrele", { rele: "5", valor: $("#switch_rele5").val()}, function(result) {
-						//
-						//alert(result.salvo);
+
 					});
 				});
 				$("#switch_rele6").change(function() {
 					
-					// Envia dados para o servidor
-					//$.getJSON( "/iluminaaquario/jquery_mobile/setalloff.php", function(result) {
+
 					$.getJSON( "/setrele", { rele: "6", valor: $("#switch_rele6").val()}, function(result) {
-						//
-						//alert(result.salvo);
+
 					});
 				});
 				$("#switch_rele7").change(function() {
-					
-					// Envia dados para o servidor
-					//$.getJSON( "/iluminaaquario/jquery_mobile/setalloff.php", function(result) {
+
 					$.getJSON( "/setrele", { rele: "7", valor: $("#switch_rele7").val()}, function(result) {
-						//
-						//alert(result.salvo);
+
 					});
 				});
 				$("#switch_rele8").change(function() {
 					
-					// Envia dados para o servidor
-					//$.getJSON( "/iluminaaquario/jquery_mobile/setalloff.php", function(result) {
 					$.getJSON( "/setrele", { rele: "8", valor: $("#switch_rele8").val()}, function(result) {
-						//
-						//alert(result.salvo);
+
 					});
 				});				
-
-
 				// Eventos para a pagina de config de wifi
 				$("#pwifi").on("pagecreate", function( event ) {
 						$.getJSON( "/scan",  function( data ) {
-							//$("#rede1").text(data.data[1]); 							
+														
 							for (i=0; i<data.data.length;i++){
-							
 							$("#s_redes").append('<option>'+data.data[i]+'</option>');
-							}
+							
+							};
+							
+							$("#l_redes").html("<b>Lista de Redes:</b>"+data.data[i]);
 						});					
 				});
 				$("#s_redes").on("change", function() {
